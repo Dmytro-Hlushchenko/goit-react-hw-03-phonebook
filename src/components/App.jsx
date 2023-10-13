@@ -11,11 +11,29 @@ export class App extends Component {
     {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
     {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
     {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},],
+    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
+    ],
     filter: '',
   }
-  
-  onFormSubmit = (data) => {
+
+  componentDidMount() {
+    const savedContactsList = localStorage.getItem('contactsList')
+    console.log(typeof savedContactsList)
+
+    if (savedContactsList !== null) {
+      this.setState ({
+        contacts: JSON.parse(savedContactsList),
+      });
+    }
+  }
+
+  componentDidUpdate(PrevProps, PrevState) {
+    if (PrevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contactsList', JSON.stringify(this.state.contacts))
+    }
+  }
+
+  onFormSubmit = data => {
     const isExist = this.state.contacts.some(
       ({name}) => name.toLocaleLowerCase() === data.name.toLocaleLowerCase());
         
@@ -29,7 +47,7 @@ export class App extends Component {
   
   }
 
-  onFilterInput = (value) => {
+  onFilterInput = value => {
     this.setState({
     filter:value
     })
@@ -39,13 +57,13 @@ export class App extends Component {
     const {contacts, filter} = this.state;
     const lowerCaseFilter = filter.toLocaleLowerCase();
     return contacts.filter(contact => contact.name.toLocaleLowerCase().includes(lowerCaseFilter));
-   };
+   }
 
    deleteContact = deleteItemId => {
       this.setState(prevState => ({
         contacts: prevState.contacts.filter(item => item.id !== deleteItemId)
       }) )
-   };
+   }
    
 render(){
   const visibleContacts = this.filterVisibleContacts();
